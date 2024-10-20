@@ -23,11 +23,6 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 ################################################################################
 FROM debian:bookworm-slim AS final
 
-RUN \
-  --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  --mount=type=cache,target=/var/cache/apt,sharing=locked \
-  apt-get update -qq && apt-get install -y openssl
-
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001
@@ -45,7 +40,6 @@ WORKDIR /home/webapp
 
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
-COPY ./templates ./templates
 
 # What the container should run when it is started.
 ENTRYPOINT [ "/bin/server" ]
